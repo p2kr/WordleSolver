@@ -1,7 +1,10 @@
 {
   "name": "wordle-solver",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "A mathematically optimal, high-performance offline Wordle Solver application.",
+  "author": "p2kr",
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "dev": "vite",
