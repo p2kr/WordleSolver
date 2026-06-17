@@ -1,0 +1,56 @@
+name: Compile and Release Executable
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'yarn'
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build Tauri Application
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__
+          releaseName: "Wordle Solver v__VERSION__"
+          releaseBody: "Release of Wordle Solver standalone desktop app."
+          releaseDraft: false
+          prerelease: false
+
+      - name: Upload Standalone Executable Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WordleSolver-Windows-Executable
+          path: src-tauri/target/release/app.exe
+
+      - name: Upload NSIS Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WordleSolver-NSIS-Setup
+          path: src-tauri/target/release/bundle/nsis/WordleSolver_*.exe
+
+      - name: Upload MSI Installer Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WordleSolver-MSI-Installer
+          path: src-tauri/target/release/bundle/msi/WordleSolver_*.msi
